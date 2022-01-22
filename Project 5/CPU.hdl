@@ -1,0 +1,105 @@
+//Name: Ryan Russell
+//UIN: 227006614
+
+/**
+ * The Hack CPU (Central Processing unit), consisting of an ALU,
+ * two registers named A and D, and a program counter named PC.
+ * The CPU is designed to fetch and execute instructions written in 
+ * the Hack machine language. In particular, functions as follows:
+ * Executes the inputted instruction according to the Hack machine 
+ * language specification. The D and A in the language specification
+ * refer to CPU-resident registers, while M refers to the external
+ * memory location addressed by A, i.e. to Memory[A]. The inM input 
+ * holds the value of this location. If the current instruction needs 
+ * to write a value to M, the value is placed in outM, the address 
+ * of the target location is placed in the addressM output, and the 
+ * writeM control bit is asserted. (When writeM==0, any value may 
+ * appear in outM). The outM and writeM outputs are combinational: 
+ * they are affected instantaneously by the execution of the current 
+ * instruction. The addressM and pc outputs are clocked: although they 
+ * are affected by the execution of the current instruction, they commit 
+ * to their new values only in the next time step. If reset==1 then the 
+ * CPU jumps to address 0 (i.e. pc is set to 0 in next time step) rather 
+ * than to the address resulting from executing the current instruction. 
+ */
+
+CHIP CPU {
+
+    IN  inM[16],         // M value input  (M = contents of RAM[A])
+        instruction[16], // Instruction for execution
+        reset;           // Signals whether to re-start the current
+                         // program (reset==1) or continue executing
+                         // the current program (reset==0).
+
+    OUT outM[16],        // M value output
+        writeM,          // Write to M? 
+        addressM[15],    // Address in data memory (of M)
+        pc[15];          // address of next instruction
+
+    PARTS:
+    // Put your code here:
+    Not(in=instruction[15], out=notinstruc);    //If instruction[15] = 0 (A instruction), then notinstruc = 1 
+                                                //If instruction[15] = 1 (C instruction), then notinstruc = 0
+
+    Mux16(a=outALU, b=instruction, sel=notinstruc, out=inA);   //If notinstruct = 1, load instruction into A-Register
+                                                             //If notinstruct = 0, do ALU and D Register logic
+
+    Or(a=notinstruc, b=instruction[5], out=loadA);  //If loadA = 0 (meaning that notinstruct = 0 and instruction[5] = 0) A Register load = instruction[5] = 0
+                                                    //If loadA = 1 (meaning that notinstruct = 1 and instruction[5] = 1) A Register load = instruction[5] = 1
+                                                    //If loadA = 1 (meaning that notinstruct = 1 and instruction[5] = 0) A Register load = notinstruct = 1
+                                                    //If loadA = 1 (meaning that notinstruct = 0 and instruction[5] = 1) A Register load = instruction[5] = 1
+
+    ARegister(in=inA, load=loadA, out=outA, out[0..14]=addressM);   //A Register's output also goes to addressM[0..14]
+
+    And(a=instruction[12], b=instruction[15], out=AorM);    //Determines if the instruction will be A = or M =
+                                                            //If both are equal to 1 then AorM = 1 and it will be M =
+                                                            //If one of them equals 0 then AorM = 0 it will be A =
+                                        
+    Mux16(a=outA, b=inM, sel=AorM, out=aluY);   //If AorM = 1 (A =) then y input for ALU will be A Register's out
+                                                //If AorM = 0 (M =) then y input for ALU will be inM 
+    
+    And(a=instruction[4], b=instruction[15], out= loadD);   //If loadD = 0 (meaning that instruction[4] = 0 and instruction[15] = 0) D Register load = instruction[4] = 0
+                                                            //If loadD = 1 (meaning that instruction[4] = 1 and instruction[15] = 1) D Register load = instruction[4] = 1
+                                                            //If loadD = 0 (meaning that instruction[4] = 1 and instruction[15] = 0) D Register load = instruction[15] = 0
+                                                            //If loadD = 0 (meaning that instruction[4] = 0 and instruction[15] = 1) D Register load = instruction[4] = 0
+
+    DRegister(in=outALU, load=loadD, out=aluX);               //D Register output goes to the ALU's x input
+
+    ALU(x=aluX, y=aluY, zx=instruction[11], nx=instruction[10], zy=instruction[9], ny=instruction[8], f=instruction[7], no=instruction[6], out=outALU, out=outM, zr=zr, ng=ng);    //ALU's control bits are the instructions's bits that make up the comp part of the instruction
+
+    And(a=instruction[3], b=instruction[15], out=writeM);   //If writeM = 0 (meaning that instruction[3] = 0 and instruction[15] = 0) writeM = instruction[3] = 0
+                                                            //If writeM = 1 (meaning that instruction[3] = 1 and instruction[15] = 1) writeM = instruction[3] = 1
+                                                            //If writeM = 0 (meaning that instruction[3] = 1 and instruction[15] = 0) writeM = instruction[15] 0
+                                                            //If writeM = 0 (meaning that instruction[3] = 0 and instruction[15] = 1) writeM = instruction[3] = 0
+    
+    Not(in=ng,out=notNG); //If out < 0 then notNG = 0; 1 otherwise
+
+	Not(in=zr,out=notZR); //If out == 0 then notZR = 0; 1 otherwise
+
+	And(a=instruction[0],b=instruction[15],out=jgt);    //If jgt = 0 (meaning that instruction[0] = 0 and instruction[15] = 0) jgt = instruction[0] = 0
+                                                        //If jgt = 1 (meaning that instruction[0] = 1 and instruction[15] = 1) jgt = instruction[0] = 1
+                                                        //If jgt = 0 (meaning that instruction[0] = 1 and instruction[15] = 0) jgt = instruction[15] = 0
+                                                        //If jgt = 0 (meaning that instruction[0] = 0 and instruction[15] = 1) jgt = instruction[0] = 0
+
+	And(a=notNG,b=notZR,out=notNGZR);   
+	And(a=jgt,b=notNGZR,out=j3);    //Will determine what j3 is (which deals with out >, >=, or not = 0)
+
+	And(a=instruction[1],b=instruction[15],out=jeq);    //If jeq = 0 (meaning that instruction[1] = 0 and instruction[15] = 0) jeq = instruction[1] = 0
+                                                        //If jeq = 1 (meaning that instruction[1] = 1 and instruction[15] = 1) jeq = instruction[1] = 1
+                                                        //If jeq = 0 (meaning that instruction[1] = 1 and instruction[15] = 0) jeq = instruction[15] = 0
+                                                        //If jeq = 0 (meaning that instruction[1] = 0 and instruction[15] = 1) jeq = instruction[1] = 0
+
+	And(a=jeq,b=zr,out=j2); //Will determine what j2 is (which deals with out =, >=, or <= 0)
+
+	And(a=instruction[2],b=instruction[15],out=jlt);    //If jlt = 0 (meaning that instruction[2] = 0 and instruction[15] = 0) jlt = instruction[2] = 0
+                                                        //If jlt = 1 (meaning that instruction[2] = 1 and instruction[15] = 1) jlt = instruction[2] = 1
+                                                        //If jlt = 0 (meaning that instruction[2] = 1 and instruction[15] = 0) jlt = instruction[15] = 0
+                                                        //If jlt = 0 (meaning that instruction[2] = 0 and instruction[15] = 1) jlt = instruction[2] = 0
+
+	And(a=jlt,b=ng,out=j1); //Will determine what j1 is (which deals with out <, <= or not = 0)
+
+	Or(a=j1,b=j2,out=j1Orj2);
+	Or(a=j3,b=j1Orj2,out=loadPC);   //j1 OR j2 OR j3 = load for PC
+
+    PC(in=outA, load=loadPC, inc=true, reset=reset, out[0..14]=pc);
+}
