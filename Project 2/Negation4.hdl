@@ -1,0 +1,9 @@
+CHIP Negation4 {
+    IN in[4];
+    OUT out[4];
+
+    PARTS:
+	// Put you code here:
+        Not4(in=in[0..3],out=notin);
+        Inc4(in=notin,out=out[0..3]);
+}

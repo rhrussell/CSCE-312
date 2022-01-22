@@ -1,0 +1,45 @@
+//Name: Ryan Russell
+//UIN: 227006614
+
+//Fibonacci Number Generator
+//Given two initial numbers f0 and f1, the sequence will be generated
+
+/* Logic:
+		1. 16 bit Numbers f0 and f1 go into the a value of Mux16
+		chips
+		2. b part of the Mux16 chip for the f0 number comes from the 
+		sum of the two previous numbers.
+		3. msel (which goes into the sel value of the two Mux16 chips 
+		for f0 and f1) will determine to either start the sequence with 
+		f0 and f1 as the starting value(msel=0) or to keep running the 
+		sequence(msel=1).
+		4. The outputs of the two Mux16 chips will pass into two 16-bit
+		Registers which are loaded with enable1 and enable2 (one for 
+		each register).
+		5. When enable1=1 or enable2=1, the register corresponding to 
+		the load part of the chip will active causing it to load the 
+		input values given to the register.
+		6. The first register(the one loaded with the output of the 
+		first Mux16 chip for the number f0) will output after enable1=1
+		into the f1 Mux16 chip while also being loaded into an Add16 chip.
+		7. The second register(the one loaded with the output of the
+		second Mux16 chip for the number f1) will output after enable2=1
+		into the Add16 chip.
+		8. The Add16 chip will add the two numbers, f0 and f1, that have
+		been loaded into the registers and the sum will be loaded back
+		into the b value of the first Mux16 chip for the number f0.
+
+*/
+
+CHIP Fibonacci {
+	IN f0[16], f1[16], msel, enable1, enable2 ;
+	OUT out[16];
+
+	PARTS:
+	//Put your code here
+		Mux16(a=f0,b=sum,sel=msel,out=f0mux);
+		Register(in=f0mux,load=enable1,out=reg1);
+		Mux16(a=f1,b=reg1,sel=msel,out=f1mux);
+		Register(in=f1mux,load=enable2,out=reg2);
+		Add16(a=reg1,b=reg2,out=out,out=sum);
+}
