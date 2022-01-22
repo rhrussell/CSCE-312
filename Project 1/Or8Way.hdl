@@ -1,0 +1,36 @@
+//Name: Ryan Harrison Russell
+
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/01/Or8Way.hdl
+
+/**
+ * 8-way Or: 
+ * out = (in[0] or in[1] or ... or in[7])
+ */
+
+/*
+    Truth Table
+|     in     | out |
+|  00000000  |  0  |
+|  11111111  |  1  |
+|  00010000  |  1  |
+|  00000001  |  1  |
+|  00100110  |  1  |
+*/
+
+CHIP Or8Way {
+    IN in[8];
+    OUT out;
+
+    PARTS:
+    // Put your code here:
+    Or(a=in[0],b=in[1],out=d1);
+    Or(a=d1,b=in[2],out=d2);
+    Or(a=d2,b=in[3],out=d3);
+    Or(a=d3,b=in[4],out=d4);
+    Or(a=d4,b=in[5],out=d5);
+    Or(a=d5,b=in[6],out=d6);
+    Or(a=d6,b=in[7],out=out);
+}

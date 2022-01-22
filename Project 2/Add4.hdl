@@ -1,0 +1,13 @@
+//Name: Ryan Russell
+//UIN: 227006614
+
+CHIP Add4{
+    IN a[4], b[4], carryIn;
+    OUT out[4], carry;
+
+    PARTS:
+        FullAdder(a=carryIn,b=a[0],c=b[0],sum=out[0],carry=d);
+        FullAdder(a=d,b=a[1],c=b[1],sum=out[1],carry=e);
+        FullAdder(a=e,b=a[2],c=b[2],sum=out[2],carry=f);
+        FullAdder(a=f,b=a[3],c=b[3],sum=out[3],carry=carry);
+}

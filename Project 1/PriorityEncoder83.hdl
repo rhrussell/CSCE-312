@@ -1,0 +1,39 @@
+//Name: Ryan Harrison Russell
+
+//8 to 3 Priority Encoder
+//input - 8-bit array
+//output - 3-bit array
+
+/*
+    Truth Table
+|      in      |   out   |
+|   00000001   |   000   |
+|   00000010   |   001   |
+|   00000100   |   010   |
+|   00001000   |   011   |
+|   00010000   |   100   |
+|   00100000   |   101   |
+|   01000000   |   110   |
+|   10000000   |   111   |
+*/
+
+CHIP PriorityEncoder83 {
+    IN in[8];
+    OUT out[3];
+
+    PARTS:
+        //Out0 = In1 + In3 + In5 + In7
+        Or(a=in[1],b=in[3],out=in13);
+        Or(a=in13,b=in[5],out=in135);
+        Or(a=in135,b=in[7],out=out[0]);
+
+        //Out1 = In2 + In3 + In6 + In7
+        Or(a=in[2],b=in[3],out=in23);
+        Or(a=in23,b=in[6],out=in236);
+        Or(a=in236,b=in[7],out=out[1]);
+
+        //Out2 = In4 + In5 + In6 + In7
+        Or(a=in[4],b=in[5],out=in45);
+        Or(a=in45,b=in[6],out=in456);
+        Or(a=in456,b=in[7],out=out[2]);
+}

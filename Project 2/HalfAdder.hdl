@@ -1,0 +1,14 @@
+//Name: Ryan Russell
+//UIN: 227006614
+
+CHIP HalfAdder{
+    IN a, b;
+    OUT carry, sum;
+    //OUT co, s;
+
+    PARTS:
+        //s = a xor b
+        Xor(a=a,b=b,out=sum);
+        //co = a and b
+        And(a=a,b=b,out=carry);
+}

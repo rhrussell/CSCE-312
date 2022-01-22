@@ -1,0 +1,18 @@
+//Name: Ryan Russell
+//UIN: 227006614
+
+/**
+ * Adds or Subtracts two 4-bit values.
+ * You may have to implement some chips or additional logic to get all of the pieces you need
+ */
+
+CHIP AddSub4 {
+    IN a[4], b[4], sub;
+    OUT out[4], carry;
+
+    PARTS:
+   // Put you code here:
+        Negation4(in=b,out=negb);
+        Mux4(a=b,b=negb,sel=sub,out=res);
+        Add4(a=a,b=res,carryIn=false,out=out,carry=carry);
+}

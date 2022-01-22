@@ -1,0 +1,88 @@
+//Name: Ryan Russell
+//UIN: 227006614
+
+//LeftLogicBitshift.hdl
+
+/**
+ * Shift x left by y bits, new bits are filled in with 0
+ * You may assume the maximum shift is 8 bits (in other words, y is in the binary range 0000000000000000 to 0000000000001000)
+ */
+
+CHIP LeftLogicBitshift {
+    IN x[16], y[16];
+    OUT out[16];
+
+    PARTS:
+   // Put you code here:
+    //First Row
+        Mux(a=x[0],b=false,sel=y[0],out=outfirstrow1);
+        Mux(a=x[1],b=x[0],sel=y[0],out=outfirstrow2);
+        Mux(a=x[2],b=x[1],sel=y[0],out=outfirstrow3);
+        Mux(a=x[3],b=x[2],sel=y[0],out=outfirstrow4);
+        Mux(a=x[4],b=x[3],sel=y[0],out=outfirstrow5);
+        Mux(a=x[5],b=x[4],sel=y[0],out=outfirstrow6);
+        Mux(a=x[6],b=x[5],sel=y[0],out=outfirstrow7);
+        Mux(a=x[7],b=x[6],sel=y[0],out=outfirstrow8);
+        Mux(a=x[8],b=x[7],sel=y[0],out=outfirstrow9);
+        Mux(a=x[9],b=x[8],sel=y[0],out=outfirstrow10);
+        Mux(a=x[10],b=x[9],sel=y[0],out=outfirstrow11);
+        Mux(a=x[11],b=x[10],sel=y[0],out=outfirstrow12);
+        Mux(a=x[12],b=x[11],sel=y[0],out=outfirstrow13);
+        Mux(a=x[13],b=x[12],sel=y[0],out=outfirstrow14);
+        Mux(a=x[14],b=x[13],sel=y[0],out=outfirstrow15);
+        Mux(a=x[15],b=x[14],sel=y[0],out=outfirstrow16);
+
+    //Second Row
+        Mux(a=outfirstrow1,b=false,sel=y[1],out=outsecondrow1);
+        Mux(a=outfirstrow2,b=false,sel=y[1],out=outsecondrow2);
+        Mux(a=outfirstrow3,b=outfirstrow1,sel=y[1],out=outsecondrow3);
+        Mux(a=outfirstrow4,b=outfirstrow2,sel=y[1],out=outsecondrow4);
+        Mux(a=outfirstrow5,b=outfirstrow3,sel=y[1],out=outsecondrow5);
+        Mux(a=outfirstrow6,b=outfirstrow4,sel=y[1],out=outsecondrow6);
+        Mux(a=outfirstrow7,b=outfirstrow5,sel=y[1],out=outsecondrow7);
+        Mux(a=outfirstrow8,b=outfirstrow6,sel=y[1],out=outsecondrow8);
+        Mux(a=outfirstrow9,b=outfirstrow7,sel=y[1],out=outsecondrow9);
+        Mux(a=outfirstrow10,b=outfirstrow8,sel=y[1],out=outsecondrow10);
+        Mux(a=outfirstrow11,b=outfirstrow9,sel=y[1],out=outsecondrow11);
+        Mux(a=outfirstrow12,b=outfirstrow10,sel=y[1],out=outsecondrow12);
+        Mux(a=outfirstrow13,b=outfirstrow11,sel=y[1],out=outsecondrow13);
+        Mux(a=outfirstrow14,b=outfirstrow12,sel=y[1],out=outsecondrow14);
+        Mux(a=outfirstrow15,b=outfirstrow13,sel=y[1],out=outsecondrow15);
+        Mux(a=outfirstrow16,b=outfirstrow14,sel=y[1],out=outsecondrow16);
+
+    //Third Row
+        Mux(a=outsecondrow1,b=false,sel=y[2],out=outthirdrow1);
+        Mux(a=outsecondrow2,b=false,sel=y[2],out=outthirdrow2);
+        Mux(a=outsecondrow3,b=false,sel=y[2],out=outthirdrow3);
+        Mux(a=outsecondrow4,b=false,sel=y[2],out=outthirdrow4);
+        Mux(a=outsecondrow5,b=outsecondrow1,sel=y[2],out=outthirdrow5);
+        Mux(a=outsecondrow6,b=outsecondrow2,sel=y[2],out=outthirdrow6);
+        Mux(a=outsecondrow7,b=outsecondrow3,sel=y[2],out=outthirdrow7);
+        Mux(a=outsecondrow8,b=outsecondrow4,sel=y[2],out=outthirdrow8);
+        Mux(a=outsecondrow9,b=outsecondrow5,sel=y[2],out=outthirdrow9);
+        Mux(a=outsecondrow10,b=outsecondrow6,sel=y[2],out=outthirdrow10);
+        Mux(a=outsecondrow11,b=outsecondrow7,sel=y[2],out=outthirdrow11);
+        Mux(a=outsecondrow12,b=outsecondrow8,sel=y[2],out=outthirdrow12);
+        Mux(a=outsecondrow13,b=outsecondrow9,sel=y[2],out=outthirdrow13);
+        Mux(a=outsecondrow14,b=outsecondrow10,sel=y[2],out=outthirdrow14);
+        Mux(a=outsecondrow15,b=outsecondrow11,sel=y[2],out=outthirdrow15);
+        Mux(a=outsecondrow16,b=outsecondrow12,sel=y[2],out=outthirdrow16);
+
+    //Fourth Row
+        Mux(a=outthirdrow1,b=false,sel=y[3],out=out[0]);
+        Mux(a=outthirdrow2,b=false,sel=y[3],out=out[1]);
+        Mux(a=outthirdrow3,b=false,sel=y[3],out=out[2]);
+        Mux(a=outthirdrow4,b=false,sel=y[3],out=out[3]);
+        Mux(a=outthirdrow5,b=false,sel=y[3],out=out[4]);
+        Mux(a=outthirdrow6,b=false,sel=y[3],out=out[5]);
+        Mux(a=outthirdrow7,b=false,sel=y[3],out=out[6]);
+        Mux(a=outthirdrow8,b=false,sel=y[3],out=out[7]);
+        Mux(a=outthirdrow9,b=outthirdrow1,sel=y[3],out=out[8]);
+        Mux(a=outthirdrow10,b=outthirdrow2,sel=y[3],out=out[9]);
+        Mux(a=outthirdrow11,b=outthirdrow3,sel=y[3],out=out[10]);
+        Mux(a=outthirdrow12,b=outthirdrow4,sel=y[3],out=out[11]);
+        Mux(a=outthirdrow13,b=outthirdrow5,sel=y[2],out=out[12]);
+        Mux(a=outthirdrow14,b=outthirdrow6,sel=y[3],out=out[13]);
+        Mux(a=outthirdrow15,b=outthirdrow7,sel=y[3],out=out[14]);
+        Mux(a=outthirdrow16,b=outthirdrow8,sel=y[3],out=out[15]);
+}
